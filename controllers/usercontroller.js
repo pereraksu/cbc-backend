@@ -70,3 +70,19 @@ export function loginUser(req, res) {
            }
     )
 }
+
+export function deleteUser(req, res) {
+    User.deleteOne({email : req.params.email}).then(
+        ()=>{
+            res.json({
+                message : "User deleted successfully"
+            })
+        }
+    ).catch(
+        ()=>{
+            res.json({
+                message : "User not deleted"
+            })
+        }
+    )
+}
