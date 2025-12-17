@@ -1,16 +1,16 @@
 import express from "express";
-import BodyParser from "body-parser";
+import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import Student from "./models/student.js";
-import studentrouter from "./routes/studentrouter.js";  
 import productrouter from "./routes/productrouter.js";
 import userrouter from "./routes/userrouter.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
+
 dotenv.config();
+
 const app = express();
 
-
+const mongourl = process.env.MONGO_DB_URI
 
 mongoose.connect(mongourl,{})
 
