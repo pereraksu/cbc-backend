@@ -28,7 +28,7 @@ app.use(
      console.log(token);
 
      if(token!=null){
-         jwt.verify(token,"cbc-secret key-7973", (err,decoded)=>{
+         jwt.verify(token,process.env.SECRET_KEY,(err,decoded)=>{
              if(!err){
                console.log(decoded);
                req.user=decoded;
