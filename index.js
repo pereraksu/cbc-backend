@@ -1,7 +1,6 @@
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
-import productrouter from "./routes/productrouter.js";
 import userrouter from "./routes/userrouter.js";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
@@ -10,80 +9,36 @@ dotenv.config();
 
 const app = express();
 
-const mongourl = process.env.MONGO_DB_URI
+// Use the variable from your .env file
+const mongourl = process.env.MONGO_DB_URI;
 
-mongoose.connect(mongourl,{})
-
-const connection = mongoose.connection;
-
-connection.once("open", () => {
-    console.log("MongoDB database connection established successfully");
-})
+mongoose.connect(mongourl)
+  .then(() => console.log("MongoDB database connection established successfully"))
+  .catch((err) => console.error("MongoDB connection error:", err));
 
 app.use(express.json());
 
-app.use(
-    (req,res,next)=>{
-     const token= console.log(req.header("Authorization"))?.replace("Bearer ","");
-     console.log(token);
-
-     if(token!=null){
-         jwt.verify(token,process.env.SECRET_KEY,(err,decoded)=>{
-             if(!err){
-               console.log(decoded);
-               req.user=decoded;
-             }
-             
-         })
-     }
-      next();
-    }
-)
-app.use("/api/student", studentrouter);
-app.use("/api/product", productrouter);
-app.use("/api/user", userrouter);
-app.get("/",
-    (req,res)=>{
-    console.log()
-    console.log("req");
-    console.log("Hello World!");
-    res.json(
-
-        {
-            message:"Good morning "+req.body.name
-        }
-    )
-});
-
-/*app.post("/",
-    (req,res)=>{
-    console.log(req,body);
-    console.log("This is a post request");
-    res.json(
-        {
-            message:"This is a post request"
-        }
-    )
-
-});*/
-/*app.listen(5000, () => {
-    console.log("Server is running on port 5000");
-});*/
-
-app.post("/", 
-    (req, res) => {
-        
-        const newStudent = new Student(req.body);
-
-        newStudent.save().then(
-            () => {
-                res.json({
-                    message: "student created"
-                    
-            
-        
+// Middleware to check JWT
+app.use((req, res, next) => {
+    const authHeader = req.header("Authorization");
     
+    if (authHeader) {
+        const token = authHeader.replace("Bearer ", "");
+        // Use process.env.SECRET_KEY to match your .env file
+        jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+            if (!err) {
+                req.user = decoded;
+            }
+        });
+    }
+    next();
 });
+
+app.use("/api/user", userrouter);
+
+app.get("/", (req, res) => {
+    res.json({
+        message: "Good morning " + (req.body.name || "Guest")
     });
 });
 

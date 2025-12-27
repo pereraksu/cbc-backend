@@ -9,6 +9,20 @@ export function createUser(req, res) {
     
     const newUserData = req.body;
 
+    if(newUserData.type == "admin"){
+        if(req.user!== null && req.user.type != "admin"){
+           res.json({message : "Please login as admin"})
+           return;
+        }
+    }
+
+    if(newUserData.type == "admin"){
+        if(req.user!== null && req.user.type != "admin"){
+           res.json({message : "Please login as admin"})
+           return;
+        }
+    }
+
     newUserData.password = bcrypt.hashSync(newUserData.password, 10);
 
 
@@ -88,4 +102,26 @@ export function deleteUser(req, res) {
             })
         }
     )
+}
+
+export function isAdmin(req, res) {
+    if(req.user==null){
+        return false;
+    }
+
+    if(req.user.type!="admin"){
+        return false;
+    }
+
+    return true;
+}
+
+export function isCustomer(req){
+    if(req.user==null){
+        return false;
+    }
+    if(req.user.type!="customer"){
+        return false;
+    }
+    return true;
 }
